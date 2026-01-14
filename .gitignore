@@ -7,6 +7,10 @@ dist/
 .env.local
 .env.*.local
 
+# Credentials (DO NOT COMMIT)
+DATABASE_CREDENTIALS.md
+SUBMISSION_BRIEF.md
+
 # IDE
 .vscode/
 .idea/
