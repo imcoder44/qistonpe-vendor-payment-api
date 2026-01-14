@@ -24,20 +24,37 @@ import { SeedModule } from './seed/seed.module';
     // Database
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 3306),
-        username: configService.get('DB_USERNAME', 'root'),
-        password: configService.get('DB_PASSWORD', ''),
-        database: configService.get('DB_NAME', 'vendor_payment_db'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('NODE_ENV') === 'development',
-        logging: configService.get('NODE_ENV') === 'development',
-        autoLoadEntities: true,
-        charset: 'utf8mb4',
-        timezone: '+00:00',
-      }),
+      useFactory: (configService: ConfigService) => {
+        // Support DATABASE_URL (Railway) or individual variables
+        const databaseUrl = configService.get('DATABASE_URL') || configService.get('MYSQL_URL');
+        
+        if (databaseUrl) {
+          return {
+            type: 'mysql',
+            url: databaseUrl,
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: true,
+            autoLoadEntities: true,
+            charset: 'utf8mb4',
+            timezone: '+00:00',
+          };
+        }
+        
+        return {
+          type: 'mysql',
+          host: configService.get('DB_HOST', 'localhost'),
+          port: configService.get<number>('DB_PORT', 3306),
+          username: configService.get('DB_USERNAME', 'root'),
+          password: configService.get('DB_PASSWORD', ''),
+          database: configService.get('DB_DATABASE') || configService.get('DB_NAME', 'vendor_payment_db'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: configService.get('NODE_ENV') !== 'production',
+          logging: configService.get('NODE_ENV') === 'development',
+          autoLoadEntities: true,
+          charset: 'utf8mb4',
+          timezone: '+00:00',
+        };
+      },
       inject: [ConfigService],
     }),
 
