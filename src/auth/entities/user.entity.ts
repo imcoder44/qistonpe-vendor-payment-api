@@ -1,0 +1,31 @@
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ type: 'varchar', length: 100, unique: true })
+  username: string;
+
+  @Column({ type: 'varchar', length: 255, unique: true })
+  email: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  password: string;
+
+  @Column({ name: 'full_name', type: 'varchar', length: 255 })
+  fullName: string;
+
+  @Column({ type: 'varchar', length: 50, default: 'user' })
+  role: string;
+
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive: boolean;
+
+  @Column({ name: 'last_login', type: 'timestamp', nullable: true })
+  lastLogin: Date;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+}

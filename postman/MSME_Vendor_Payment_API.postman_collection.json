@@ -1,0 +1,767 @@
+{
+  "info": {
+    "name": "MSME Vendor Payment API",
+    "description": "Complete API collection for MSME Vendor Payment Tracking System\n\nBuilt for QistonPe Backend API Intern Assignment\n\n## Getting Started\n1. Import this collection into Postman\n2. Set up the environment variables\n3. Run the Login request first\n4. The token will be automatically saved for subsequent requests\n\n## Environment Variables Required\n- `baseUrl`: http://localhost:3000/api/v1\n- `accessToken`: (auto-populated after login)",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "vendorId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "purchaseOrderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "paymentId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+                  "    pm.test('Login successful', function () {",
+                  "        pm.expect(jsonData.accessToken).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with username and password to get JWT token.\n\nDefault credentials:\n- Username: admin\n- Password: admin123"
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Get the currently logged in user's profile."
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"Password123!\",\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account."
+          }
+        }
+      ],
+      "description": "Authentication endpoints for login and user management."
+    },
+    {
+      "name": "👥 Vendors",
+      "item": [
+        {
+          "name": "Create Vendor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('vendorId', jsonData.id);",
+                  "    pm.test('Vendor created', function () {",
+                  "        pm.expect(jsonData.id).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"ABC Supplies Pvt Ltd\",\n    \"email\": \"contact@abcsupplies.com\",\n    \"contactPerson\": \"Rajesh Kumar\",\n    \"phoneNumber\": \"+91 98765 43210\",\n    \"address\": \"123 Industrial Area, Mumbai, Maharashtra 400001\",\n    \"gstNumber\": \"27AADCA1234F1Z5\",\n    \"panNumber\": \"AADCA1234F\",\n    \"paymentTerms\": \"Net 30\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vendors",
+              "host": ["{{baseUrl}}"],
+              "path": ["vendors"]
+            },
+            "description": "Create a new vendor with all details."
+          }
+        },
+        {
+          "name": "Get All Vendors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["vendors"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "Active",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get paginated list of vendors with optional search and status filter."
+          }
+        },
+        {
+          "name": "Get Vendor by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vendors", "{{vendorId}}"]
+            },
+            "description": "Get detailed information about a specific vendor."
+          }
+        },
+        {
+          "name": "Update Vendor",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"contactPerson\": \"Updated Contact Name\",\n    \"phoneNumber\": \"+91 98765 00000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vendors", "{{vendorId}}"]
+            },
+            "description": "Update vendor details. Only include fields you want to update."
+          }
+        },
+        {
+          "name": "Get Vendor Payment Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorId}}/payment-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["vendors", "{{vendorId}}", "payment-summary"]
+            },
+            "description": "Get payment summary for a vendor including total, paid, and outstanding amounts."
+          }
+        },
+        {
+          "name": "Delete Vendor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vendors", "{{vendorId}}"]
+            },
+            "description": "Soft delete a vendor. The vendor data is preserved but marked as deleted."
+          }
+        }
+      ],
+      "description": "Vendor management endpoints."
+    },
+    {
+      "name": "📋 Purchase Orders",
+      "item": [
+        {
+          "name": "Create Purchase Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('purchaseOrderId', jsonData.id);",
+                  "    pm.test('PO created', function () {",
+                  "        pm.expect(jsonData.poNumber).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"vendorId\": \"{{vendorId}}\",\n    \"items\": [\n        {\n            \"description\": \"Office Supplies - Paper\",\n            \"quantity\": 100,\n            \"unitPrice\": 50,\n            \"taxRate\": 18\n        },\n        {\n            \"description\": \"Printer Cartridges\",\n            \"quantity\": 10,\n            \"unitPrice\": 500,\n            \"taxRate\": 18\n        }\n    ],\n    \"notes\": \"Urgent delivery required\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders"]
+            },
+            "description": "Create a new purchase order with line items. PO number is auto-generated."
+          }
+        },
+        {
+          "name": "Get All Purchase Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "vendorId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "Approved",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get paginated list of purchase orders with optional filters."
+          }
+        },
+        {
+          "name": "Get Purchase Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/{{purchaseOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders", "{{purchaseOrderId}}"]
+            },
+            "description": "Get detailed information about a purchase order including items and payments."
+          }
+        },
+        {
+          "name": "Update Purchase Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notes\": \"Updated notes for this PO\",\n    \"status\": \"Approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/{{purchaseOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders", "{{purchaseOrderId}}"]
+            },
+            "description": "Update purchase order details."
+          }
+        },
+        {
+          "name": "Cancel Purchase Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/{{purchaseOrderId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders", "{{purchaseOrderId}}", "cancel"]
+            },
+            "description": "Cancel a purchase order. Cannot cancel if payments exist."
+          }
+        },
+        {
+          "name": "Get Overdue Purchase Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/overdue",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders", "overdue"]
+            },
+            "description": "Get list of all overdue purchase orders."
+          }
+        },
+        {
+          "name": "Get PO Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders", "statistics"]
+            },
+            "description": "Get purchase order statistics and summary."
+          }
+        },
+        {
+          "name": "Add Item to PO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"description\": \"Additional Item\",\n    \"quantity\": 5,\n    \"unitPrice\": 200,\n    \"taxRate\": 18\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/{{purchaseOrderId}}/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders", "{{purchaseOrderId}}", "items"]
+            },
+            "description": "Add a new item to an existing purchase order."
+          }
+        },
+        {
+          "name": "Delete Purchase Order",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/{{purchaseOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["purchase-orders", "{{purchaseOrderId}}"]
+            },
+            "description": "Soft delete a purchase order."
+          }
+        }
+      ],
+      "description": "Purchase order management endpoints."
+    },
+    {
+      "name": "💰 Payments",
+      "item": [
+        {
+          "name": "Record Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('paymentId', jsonData.id);",
+                  "    pm.test('Payment recorded', function () {",
+                  "        pm.expect(jsonData.paymentReference).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"purchaseOrderId\": \"{{purchaseOrderId}}\",\n    \"amountPaid\": 5000,\n    \"paymentMethod\": \"Bank Transfer\",\n    \"paymentDate\": \"2026-01-14\",\n    \"transactionReference\": \"TXN123456789\",\n    \"notes\": \"Partial payment for January order\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments"]
+            },
+            "description": "Record a new payment against a purchase order.\n\nPayment methods: Bank Transfer, Cheque, Cash, Credit Card, UPI, NEFT, RTGS, IMPS"
+          }
+        },
+        {
+          "name": "Get All Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "vendorId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "Completed",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get paginated list of payments with optional filters."
+          }
+        },
+        {
+          "name": "Get Payment by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/{{paymentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "{{paymentId}}"]
+            },
+            "description": "Get detailed information about a specific payment."
+          }
+        },
+        {
+          "name": "Void Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Incorrect amount recorded\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/{{paymentId}}/void",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "{{paymentId}}", "void"]
+            },
+            "description": "Void an existing payment. Requires a reason for audit purposes."
+          }
+        },
+        {
+          "name": "Get Payments by PO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/purchase-order/{{purchaseOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "purchase-order", "{{purchaseOrderId}}"]
+            },
+            "description": "Get all payments for a specific purchase order."
+          }
+        },
+        {
+          "name": "Get Payment Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "statistics"]
+            },
+            "description": "Get payment statistics and totals."
+          }
+        },
+        {
+          "name": "Get Payment Trends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/trends?days=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "trends"],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "30"
+                }
+              ]
+            },
+            "description": "Get payment trends for the specified number of days."
+          }
+        }
+      ],
+      "description": "Payment recording and tracking endpoints."
+    },
+    {
+      "name": "📊 Analytics",
+      "item": [
+        {
+          "name": "Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "dashboard"]
+            },
+            "description": "Get comprehensive dashboard with all business metrics."
+          }
+        },
+        {
+          "name": "Vendor Outstanding Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/vendor-outstanding",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "vendor-outstanding"]
+            },
+            "description": "Get outstanding amounts per vendor."
+          }
+        },
+        {
+          "name": "Payment Aging Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/payment-aging",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "payment-aging"]
+            },
+            "description": "Get payment aging analysis with buckets (1-30, 31-60, 61-90, 90+ days)."
+          }
+        },
+        {
+          "name": "Cash Flow Forecast",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/cash-flow-forecast?weeks=4",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "cash-flow-forecast"],
+              "query": [
+                {
+                  "key": "weeks",
+                  "value": "4"
+                }
+              ]
+            },
+            "description": "Get weekly cash flow forecast for upcoming payments."
+          }
+        },
+        {
+          "name": "Top Vendors by Outstanding",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/top-vendors?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "top-vendors"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get top vendors ranked by outstanding amount."
+          }
+        },
+        {
+          "name": "Overdue Analysis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/overdue-analysis",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "overdue-analysis"]
+            },
+            "description": "Get detailed analysis of overdue payments by vendor and aging."
+          }
+        }
+      ],
+      "description": "Analytics and reporting endpoints."
+    },
+    {
+      "name": "🏥 Health Check",
+      "item": [
+        {
+          "name": "Basic Health",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Basic health check with database connectivity status."
+          }
+        },
+        {
+          "name": "Readiness Probe",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/ready",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "ready"]
+            },
+            "description": "Kubernetes readiness probe."
+          }
+        },
+        {
+          "name": "Liveness Probe",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/live",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "live"]
+            },
+            "description": "Kubernetes liveness probe."
+          }
+        }
+      ],
+      "description": "Health check and monitoring endpoints."
+    }
+  ]
+}
